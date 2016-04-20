@@ -1,2 +1,8 @@
 
-console.log("Hello World");
+var sqlite3 = require('sqlite3').verbose();
+
+var db = new sqlite3.Database("");
+
+
+
+app.get("/api/search", require ("./routes/api"));
