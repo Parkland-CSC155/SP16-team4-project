@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><% include partials/head.ejs %></head>
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <h1><%= title %></h1>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-12">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Food</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% for(var i=0; i<food.length; i++) {%>
+                        <tr>
+                            <td>
+                                <a href="/api/details/<%= food[i].NDB_No  %>"><%= food[i].Shrt_Desc %></a>
+                            </td>
+                        </tr>
+                        <% } %>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div><!-- container -->
+    <% include partials/jsdefaults.ejs %>
+</body>
+</html>
