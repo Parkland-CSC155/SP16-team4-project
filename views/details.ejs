@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><% include partials/head.ejs %></head>
+<body>
+    <div class="container">
+        <h1><%= food.Shrt_Desc %></h1>
+        <div class="row">
+            <div class="col-sm-12">
+                <h2>Nurtritional Information</h2>
+                <p>Serving Size: <%= food.GmWt_Desc1 %></p>
+                <p>Calories: <%= food.Energ_Kcal %></p>
+                <p>Carbs: <%= food.Carbs %></p>
+                <p>Sat. Fat: <%= food.Fat %></p>
+                <p>Cholesterol: <%= food.Cholesterol %></p>
+                <p>Sodium: <%= food.Sodium %></p>
+                <p>Sugar: <%= food.Sugar %></p>
+                <p>Protein: <%= food.Protein %></p>
+            </div>
+        </div>
+    </div><!-- container -->
+    <% include partials/jsdefaults.ejs %>
+</body>
+</html>
