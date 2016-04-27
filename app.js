@@ -9,7 +9,7 @@ var path = require('path');
 app.set('views', path.join(__dirname, "views"));
 
 var sqlite3 = require('sqlite3').verbose();
-var db = new sqlite3.Database("C://temp//nutrition.db");
+var db = new sqlite3.Database("./data/nutrition.db");
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
