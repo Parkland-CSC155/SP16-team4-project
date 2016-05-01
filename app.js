@@ -8,16 +8,43 @@ app.set('view engine', 'ejs');
 var path = require('path');
 app.set('views', path.join(__dirname, "views"));
 
-var sqlite3 = require('sqlite3').verbose();
-var db = new sqlite3.Database("./data/nutrition.db");
+//var sqlite3 = require('sqlite3').verbose();
+//var db = new sqlite3.Database("./data/nutrition.db");
+
+var sql = require('seriate');
+var config = {
+	"server": "sqldbteam4kevin.database.windows.net",
+	"user": "team4admin",
+	"password": "admin4-team4",
+	"database": "csc155-4db",
+    "options": {
+        encrypt: true
+    }
+};
+
+var connectionString = process.env.MS_TableConnectionString;
+//var db = connectionString;
+
+sql.setDefaultConfig( config );
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
+/*
+var test = [];
+sql.execute( {  
+        query: "SELECT NDB_No FROM [csc155-4db].dbo.NutritionData WHERE NDB_No = '01001'"
+    } ).then( function( results ) {
+        test = results[0];
+        console.log( test );
+    }, function( err ) {
+        console.log( "Something bad happened:", err );
+    } );
+*/
 
 ///////////////////////// start routes /////////////////////////
 app.get("/", function(req, res){
-   res.send("Team 4 Final Project"); 
+   res.render("index", { title: "Team 4 Final Project"}); 
 });
 
 // root api route takes user to login page
@@ -25,11 +52,24 @@ app.get("/api", function(req, res){
    res.render("login", { title: "Nutrition App Login" }); 
 });
 
+/*
 var listSql = `
 SELECT 	NDB_No, Shrt_Desc
 FROM	NutritionData
 `;
+*/
 app.get("/api/list", function(req, res){
+   sql.execute({
+       query: "SELECT [NDB_No], [Shrt_Desc] FROM [csc155-4db].[dbo].[NutritionData]"
+   }).then( function( results ) {
+        //console.log( results );
+        res.render("list", { 
+           title: "Food List",
+           food: results 
+        });        
+   });
+   
+/*
    db.all(listSql, function(err, rows) {
        if(err) { res.send('err: '+err);}
        else {
@@ -38,11 +78,29 @@ app.get("/api/list", function(req, res){
                food: rows 
                });
        }
-   })  
+   })  */
 });
 
 app.get("/api/details/:id", function(req, res){
    var id = req.params.id;
+   sql.execute({
+       query: "SELECT [NDB_No], [Shrt_Desc], [Energ_Kcal], [Carbohydrt_(g)] AS Carbs, [FA_Sat_(g)] AS Fat, [Cholestrl_(mg)] AS Cholesterol, [Sodium_(mg)] AS Sodium, [Sugar_Tot_(g)] AS Sugar, [Protein_(g)] AS Protein, [GmWt_Desc1] FROM [csc155-4db].[dbo].[NutritionData] WHERE [NDB_No] = @id",
+       params: {
+           id: {
+               type: sql.NVARCHAR,
+               val: id
+           }
+       }
+   }).then( function( results ) {
+        //console.log( results );
+        res.render("details", { 
+           title: "Food Detail",
+           food: results 
+        });        
+   });
+   
+   
+/*   
    var detailSql = 'SELECT NDB_No, Shrt_Desc, Energ_Kcal, [Carbohydrt_(g)] AS Carbs, [FA_Sat_(g)] AS Fat, [Cholestrl_(mg)] AS Cholesterol, [Sodium_(mg)] AS Sodium, [Sugar_Tot_(g)] AS Sugar, [Protein_(g)] AS Protein, GmWt_Desc1 FROM NutritionData WHERE NDB_No = ' + "'" + id + "'";
    db.get(detailSql, function(err, row) {
        if(err){ res.send('err: '+err);}
@@ -52,7 +110,7 @@ app.get("/api/details/:id", function(req, res){
                food: row 
                });
        } 
-   })
+   })  */
 });
 
 app.get("/api/search", function(req, res){

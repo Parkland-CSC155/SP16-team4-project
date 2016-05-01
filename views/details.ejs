@@ -3,18 +3,18 @@
 <head><% include partials/head.ejs %></head>
 <body>
     <div class="container">
-        <h1><%= food.Shrt_Desc %></h1>
+        <h1><%= food[0].Shrt_Desc %></h1>
         <div class="row">
             <div class="col-sm-12">
                 <h2>Nurtritional Information</h2>
-                <p>Serving Size: <%= food.GmWt_Desc1 %></p>
-                <p>Calories: <%= food.Energ_Kcal %></p>
-                <p>Carbs: <%= food.Carbs %></p>
-                <p>Sat. Fat: <%= food.Fat %></p>
-                <p>Cholesterol: <%= food.Cholesterol %></p>
-                <p>Sodium: <%= food.Sodium %></p>
-                <p>Sugar: <%= food.Sugar %></p>
-                <p>Protein: <%= food.Protein %></p>
+                <p>Serving Size: <%= food[0].GmWt_Desc1 %></p>
+                <p>Calories: <%= food[0].Energ_Kcal %></p>
+                <p>Carbs: <%= food[0].Carbs %></p>
+                <p>Sat. Fat: <%= food[0].Fat %></p>
+                <p>Cholesterol: <%= food[0].Cholesterol %></p>
+                <p>Sodium: <%= food[0].Sodium %></p>
+                <p>Sugar: <%= food[0].Sugar %></p>
+                <p>Protein: <%= food[0].Protein %></p>
             </div>
         </div>
     </div><!-- container -->
