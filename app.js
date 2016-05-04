@@ -60,9 +60,11 @@ FROM	NutritionData
 `;
 */
 app.get("/api/list", function(req, res){
+   
    sql.execute({
        query: "SELECT [NDB_No], [Shrt_Desc] FROM [csc155-4db].[dbo].[NutritionData]"
    }).then( function( results ) {
+       /*
         //console.log( results );
         var listLength = results.length;
         var pageSize = 25;
@@ -79,16 +81,17 @@ app.get("/api/list", function(req, res){
         var foodList = foodArrays[+currentPage - 1];
         
         //console.log(listLength);
-        
+        */
         res.render("list", { 
            title: "Food List",
-           food: foodList,
-           pageSize: pageSize,
-           listLength: listLength,
-           pageCount: pageCount,
-           currentPage: currentPage 
+           food: results
+           //pageSize: pageSize,
+           //listLength: listLength,
+           //pageCount: pageCount,
+           //currentPage: currentPage 
         });        
    });
+   
    
 /*
    db.all(listSql, function(err, rows) {

@@ -1,61 +1,42 @@
-<!DOCTYPE html>
-<html lang="en">
-<head><% include partials/head.ejs %></head>
-<body>
-    <div class="container">
-        <div class="row">
-            <div class="col-sm-12">
-                <h1><%= title %></h1>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-sm-12">
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>Food</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <% for(var i=0; i<food.length; i++) {%>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+    <head>
+        <% include partials/head.ejs %>
+        <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+
+        <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/r/bs-3.3.5/jq-2.1.4,dt-1.10.8/datatables.min.css"/>
+ 
+        <script type="text/javascript" src="https://cdn.datatables.net/r/bs-3.3.5/jqc-1.11.3,dt-1.10.8/datatables.min.js"></script>
+        <script type="text/javascript" charset="utf-8">
+            $(document).ready(function() {
+                $('#example').DataTable();
+            } );
+        </script>
+    </head>
+    <body>
+        <div class="container">
+
+        <table id="example" class="display" cellspacing="0" width="100%">
+            <thead><tr><th>Receipe</th></tr></thead>
+            <tbody>
+                <% for(var i=0; i<food.length; i++) {%>
                         <tr>
                             <td>
                                 <a href="/api/details/<%= food[i].NDB_No  %>"><%= food[i].Shrt_Desc %></a>
                             </td>
                         </tr>
                         <% } %>
-                    </tbody>
-                </table>
-            </div>
+            </tbody>
+        
+        </table>
+            
         </div>
-        <% if (pageCount > 1) { %>  
-            <ul class="pagination">  
-                <% if (currentPage > 1) { %>
-                    <li><a href="/api/list/?page=1">&laquo;</a></li>
-                <% } %>
-                <% var i = 1;
-                if (currentPage > 5) {
-                i = +currentPage - 4;
-                } %>
-                <% if (i !== 1) { %>
-                    <li class="disabled"><a href="#">...</a></li>
-                <% } %>
-                <% for (i; i<=pageCount; i++) { %>
-                    <% if (currentPage == i) { %>
-                        <li class="active"><span><%= i %> <span class="sr-only">(current)</span></span></li>
-                    <% } else { %>
-                         <li><a href="/api/list/?page=<%= i %>"><%= i %></a></li>
-                    <% } %>
-                    <% if (i == (+currentPage + 4)) { %>
-                         <li class="disabled"><a href="#">...</a></li>
-                    <% break; } %>
-                <% } %>
-                <% if (currentPage != pageCount) { %>
-                    <li><a href="/api/list/?page=<%= pageCount %>">&raquo;</a></li>
-                <% } %>
-            </ul>  
-        <% } %>  
-    </div><!-- container -->
-    <% include partials/jsdefaults.ejs %>
-</body>
+
+<script type="text/javascript">
+    // For demo to fit into DataTables site builder...
+    $('#example')
+        .removeClass( 'display' )
+        .addClass('table table-striped table-bordered');
+</script>
+    </body>
 </html>
