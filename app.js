@@ -4,6 +4,7 @@ var bodyParser = require('body-parser');
 
 var app = express();
 // view engine setup
+app.engine('html', require('ejs').renderFile);
 app.set('view engine', 'ejs');
 var path = require('path');
 app.set('views', path.join(__dirname, "views"));
@@ -63,9 +64,29 @@ app.get("/api/list", function(req, res){
        query: "SELECT [NDB_No], [Shrt_Desc] FROM [csc155-4db].[dbo].[NutritionData]"
    }).then( function( results ) {
         //console.log( results );
+        var listLength = results.length;
+        var pageSize = 25;
+        var pageCount = Math.floor(listLength / pageSize);
+        console.log(pageCount);
+        var currentPage = 1;
+        var foodArrays = [];
+        while (results.length > 0) {
+            foodArrays.push(results.splice(0, pageSize));
+        }
+        if (typeof req.query.page !== 'undefined') {
+            currentPage = +req.query.page;
+        }
+        var foodList = foodArrays[+currentPage - 1];
+        
+        //console.log(listLength);
+        
         res.render("list", { 
            title: "Food List",
-           food: results 
+           food: foodList,
+           pageSize: pageSize,
+           listLength: listLength,
+           pageCount: pageCount,
+           currentPage: currentPage 
         });        
    });
    
