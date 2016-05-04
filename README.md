@@ -1,6 +1,7 @@
 # SP16-team4-project
 
 5/3/2016
+
 I revised the app.js and views/list.ejs files to incorporate pagination into the food listing.  For reference and potential reversion, I saved copies of the previous versions of these files in the "archive may 3" folder.
 
 4/24/2016
