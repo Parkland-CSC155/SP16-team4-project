@@ -1,5 +1,9 @@
 var express = require('express');
 var bodyParser = require('body-parser');
+var passport = require('passport');
+var Strategy = require('passport-local').Strategy;
+var expressSession = require('express-session');
+var mongoose = require('mongoose');
 //var routes = require('./routes/api');
 
 var app = express();
@@ -42,16 +46,74 @@ sql.execute( {
         console.log( "Something bad happened:", err );
     } );
 */
+//Configure passport strategy
+// logging, parsing, and session handling.
+app.use(require('morgan')('combined'));
+app.use(require('cookie-parser')());
+app.use(require('body-parser').urlencoded({ extended: true }));
+app.use(require('express-session')({ 
+    secret: 'keyboard cat', 
+    resave: false, 
+    saveUninitialized: false 
+}));
+
+passport.serializeUser(function(user, done) {
+  done(null, user._id);
+});
+ 
+passport.deserializeUser(function(id, done) {
+  user.findById(id, function(err, user) {
+    done(err, user);
+  });
+});
+
+var user = sql.execute({
+      query: "SELECT * FROM [csc155-4db].[dbo].[Users]"
+      });
+      
+passport.use('local-login', new Strategy({
+
+        usernameField : 'username',
+        passwordField : 'password',
+        passReqToCallback : true 
+    },
+    function(req, username, password, done) { 
+
+  
+        user.findOne({ 'local.username' :  username }, function(err, user) {
+            // if there are any errors, return the error before anything else
+            if (err)
+                return done(err);
+
+            // if no user is found, return the message
+            if (!user)
+                return done(null, false, req.flash('loginMessage', 'No user found.')); // req.flash is the way to set flashdata using connect-flash
+
+            // if the user is found but the password is wrong
+            if (!user.validPassword(password))
+                return done(null, false, req.flash('loginMessage', 'Oops! Wrong password.')); // create the loginMessage and save it to session as flashdata
+
+            // all is well, return successful user
+            return done(null, user);
+        });
+
+    }));
+
 
 ///////////////////////// start routes /////////////////////////
 app.get("/", function(req, res){
    res.render("index", { title: "Team 4 Final Project"}); 
 });
 
-// root api route takes user to login page
-app.get("/api", function(req, res){
-   res.render("login", { title: "Nutrition App Login" }); 
+// takes user to login page
+app.get("/login", function (req, res) {
+    res.render("login", { title: "Nutrition App Login" });
 });
+app.post('/login', passport.authenticate('local-login', {
+    successRedirect: '/list', 
+    failureRedirect: '/login', 
+    failureFlash: true 
+}));
 
 /*
 var listSql = `
@@ -59,7 +121,7 @@ SELECT 	NDB_No, Shrt_Desc
 FROM	NutritionData
 `;
 */
-app.get("/api/list", function(req, res){
+app.get("/list", function(req, res){
    
    sql.execute({
        query: "SELECT [NDB_No], [Shrt_Desc] FROM [csc155-4db].[dbo].[NutritionData]"
@@ -105,7 +167,7 @@ app.get("/api/list", function(req, res){
    })  */
 });
 
-app.get("/api/details/:id", function(req, res){
+app.get("/details/:id", function(req, res){
    var id = req.params.id;
    sql.execute({
        query: "SELECT [NDB_No], [Shrt_Desc], [Energ_Kcal], [Carbohydrt_(g)] AS Carbs, [FA_Sat_(g)] AS Fat, [Cholestrl_(mg)] AS Cholesterol, [Sodium_(mg)] AS Sodium, [Sugar_Tot_(g)] AS Sugar, [Protein_(g)] AS Protein, [GmWt_Desc1] FROM [csc155-4db].[dbo].[NutritionData] WHERE [NDB_No] = @id",
@@ -137,7 +199,7 @@ app.get("/api/details/:id", function(req, res){
    })  */
 });
 
-app.get("/api/search", function(req, res){
+app.get("/search", function(req, res){
    res.render("search", { title: "Nutrition App Search" }); 
 });
 
@@ -162,9 +224,25 @@ app.listen(process.env.PORT || 3000, function () {
   console.log('Example app listening on port 3000!');
 });
 
+    sql.execute({
+        query: "SELECT [NDB_No], [Shrt_Desc] FROM [csc155-4db].[dbo].[NutritionData]"
+    }).then(function (results) {
+        res.json(results);
+        
+    });
+ });
+    
+app.get("/api", function(req, res){
+   
+   res.json()
+    
+});
 
-
-
+app.get("/api/details/:id", function(req, res){
+   
+   res.json()
+    
+});
 /*
 // Don't see any point in using the api.js for routes at this time 
 
