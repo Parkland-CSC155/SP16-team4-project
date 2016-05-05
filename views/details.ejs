@@ -5,16 +5,21 @@
     <div class="container">
         <h1><%= food[0].Shrt_Desc %></h1>
         <div class="row">
-            <div class="col-sm-12">
+            <div class="nutrdata">
                 <h2>Nurtritional Information</h2>
                 <p>Serving Size: <%= food[0].GmWt_Desc1 %></p>
                 <p>Calories: <%= food[0].Energ_Kcal %></p>
                 <p>Carbs: <%= food[0].Carbs %></p>
-                <p>Sat. Fat: <%= food[0].Fat %></p>
-                <p>Cholesterol: <%= food[0].Cholesterol %></p>
+                <p>Sat. Fat: <%= food[0].Fat  %></p>
+                <p>Cholesterol: <%= food[0].Cholesterol%></p>
                 <p>Sodium: <%= food[0].Sodium %></p>
                 <p>Sugar: <%= food[0].Sugar %></p>
-                <p>Protein: <%= food[0].Protein %></p>
+                <p>Protein: <%= food[0].Protein%></p>
+                <form>
+                   Amount:<br>
+                   <input type="text" name="amount" id = "amount"><br>
+                   <button  onclick= 'calculate()' type="submit">Submit</button>
+                </form> 
             </div>
         </div>
     </div><!-- container -->
