@@ -1,5 +1,6 @@
-// router.get doesn't work
-/*  
+/*
+router.get doesn't work
+ 
 var express = require("express");
 var router = express.Router();
 
@@ -33,8 +34,8 @@ router.get("id", function(req, res){
 });
 
 module.exports = router;
-*/
 
+*/
 
 
 // This works so far, but I don't think it will handle variable urls
