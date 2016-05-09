@@ -185,56 +185,6 @@ app.get("/details/:id", function(req, res){
         });        
    });
    
-   /* One of the things I tried to get calculator
-function calculate() {
-       var userInput = null;
-       userInput = document.getElementById("amount").value;
-       if (userInput = null) {
-           app.get("/details/:id", function (req, res) {
-               var id = req.params.id;
-               sql.execute({
-                   query: "SELECT [NDB_No], [Shrt_Desc], [Energ_Kcal], [Carbohydrt_(g)] AS Carbs, [FA_Sat_(g)] AS Fat, [Cholestrl_(mg)] AS Cholesterol, [Sodium_(mg)] AS Sodium, [Sugar_Tot_(g)] AS Sugar, [Protein_(g)] AS Protein, [GmWt_Desc1] FROM [csc155-4db].[dbo].[NutritionData] WHERE [NDB_No] = @id",
-                   params: {
-                       id: {
-                           type: sql.NVARCHAR,
-                           val: id
-                       }
-                   }
-               }).then(function (results) {
-                   //console.log( results );
-                   res.render("details", {
-                       title: "Food Detail",
-                       food: results
-                   });
-               });
-           });
-       }
-       else {
-           app.get("/details/:id", function (req, res) {
-               var id = req.params.id;
-               sql.execute({
-                   query: "SELECT [NDB_No], [Shrt_Desc], [Energ_Kcal], [Carbohydrt_(g)] AS Carbs, [FA_Sat_(g)] AS Fat, [Cholestrl_(mg)] AS Cholesterol, [Sodium_(mg)] AS Sodium, [Sugar_Tot_(g)] AS Sugar, [Protein_(g)] AS Protein, [GmWt_Desc1] FROM [csc155-4db].[dbo].[NutritionData] WHERE [NDB_No] = @id",
-                   params: {
-                       id: {
-                           type: sql.NVARCHAR,
-                           val: id
-                       }
-                   }
-               }).then(function (results) {
-                   //console.log( results );
-                   res.render("details", { title: "Food Detail"});
-                   $("#nutrdata").replaceWith(
-                       "<h2> Nurtritional Information < /h2>",
-                       "< p > Serving Size:" + results[0].GmWt_Desc1 + "</p>",
-                      " < p > Calories: " + ((results [0].Energ_Kcal) * (userInput)) + " </p>"
-
-                   )
-               });
-
-               });
-}   
-   }
-   */
    
 /*   
    var detailSql = 'SELECT NDB_No, Shrt_Desc, Energ_Kcal, [Carbohydrt_(g)] AS Carbs, [FA_Sat_(g)] AS Fat, [Cholestrl_(mg)] AS Cholesterol, [Sodium_(mg)] AS Sodium, [Sugar_Tot_(g)] AS Sugar, [Protein_(g)] AS Protein, GmWt_Desc1 FROM NutritionData WHERE NDB_No = ' + "'" + id + "'";
@@ -274,7 +224,6 @@ app.listen(process.env.PORT || 3000, function () {
   console.log('Example app listening on port 3000!');
 });
 
-app.get("/api/list", function (req, res) {
     sql.execute({
         query: "SELECT [NDB_No], [Shrt_Desc] FROM [csc155-4db].[dbo].[NutritionData]"
     }).then(function (results) {
