@@ -153,9 +153,6 @@ app.get("/list", function(req, res){
            //currentPage: currentPage 
         });        
    });
-   
-app.get("/details/:id", function(req, res){
-   var id = req.params.id;
       
 app.get("/list2",function(req,res){
   var page = req.query.page || 1;
@@ -218,10 +215,31 @@ app.get("/details/:id", function(req, res){
    })  */
 });
 
-app.get("/search", function(req, res){
-   res.render("search", { title: "Nutrition App Search" }); 
+
+
+app.get("/search", function(req, res, next){
+   
+    res.render("search", { 
+        title: "Nutrition App Search"
+    });        
+
 });
 
+app.post("/searchResult",function(req,res,next){
+   var userInput=req.body.userInput;
+   console.log(userInput);
+   var myContainedWord="%"+userInput+"%";
+   sql.execute({
+       query: "SELECT [NDB_No], [Shrt_Desc] FROM [csc155-4db].[dbo].[NutritionData] WHERE [Shrt_Desc] LIKE @myContainedWord"
+   }).then( function( results ) {
+        //console.log( results );
+        res.render("list2", { 
+           title: "Food List 2",
+           page:1,
+           food: results 
+        });        
+   });
+});
 ///////////////////////// end routes /////////////////////////
    
 
