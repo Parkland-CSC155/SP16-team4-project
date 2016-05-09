@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><% include partials/head.ejs %></head>
+<body>
+    <div class="container">
+        <h1><%= title %></h1>
+        <div>
+            <% for(var i=0; i<food.length; i++) {%>
+                <tr>
+                    <td>
+                        <a href="./details/<%= food[i].NDB_No  %>"><%= food[i].Shrt_Desc %></a>
+                    </td>
+                </tr>
+        <% } %>  
+        </div>
+        <div>
+            <a href="/list?page=<%= (page - 1) %>">Prev</a>
+
+            <a href="/list?<%= (page - 2) %>"><%= (page - 2) %></a>
+            <a href="/list?<%= (page - 1) %>"><%= (page - 1) %></a>
+            <a href="/list?<%= (page + 1) %>"><%= (page + 1) %></a>
+            <a href="/list?<%= (page + 2) %>"><%= (page + 2) %></a>
+
+            <a href="/list?<%= (page + 1) %>">Next</a>
+        </div>
+    </div><!-- container -->
+    <% include partials/jsdefaults.ejs %>
+</body>
+</html>

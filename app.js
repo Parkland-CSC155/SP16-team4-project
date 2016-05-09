@@ -154,6 +154,25 @@ app.get("/list", function(req, res){
         });        
    });
    
+app.get("/details/:id", function(req, res){
+   var id = req.params.id;
+      
+app.get("/list2",function(req,res){
+  var page = req.query.page || 1;
+  page = Number(page); // in case it is a string, we need it to be a number
+  var n=page-1;
+
+   sql.execute({
+       query: "SELECT [NDB_No], [Shrt_Desc] FROM [csc155-4db].[dbo].[NutritionData] ORDER BY [Shrt_Desc] OFFSET @n ROWS FETCH NEXT 25 ROWS ONLY"
+   }).then( function( results ) {
+        //console.log( results );
+        res.render("list2", { 
+           title: "Food List 2",
+           page: page,
+           food: results 
+        });        
+   });
+});    
    
 /*
    db.all(listSql, function(err, rows) {
@@ -224,13 +243,15 @@ app.listen(process.env.PORT || 3000, function () {
   console.log('Example app listening on port 3000!');
 });
 
+app.get("/api/list",function(req,res){
     sql.execute({
         query: "SELECT [NDB_No], [Shrt_Desc] FROM [csc155-4db].[dbo].[NutritionData]"
     }).then(function (results) {
         res.json(results);
         
     });
- });
+});
+
     
 app.get("/api", function(req, res){
    
@@ -244,7 +265,7 @@ app.get("/api/details/:id", function(req, res){
     
 });
 /*
-// Don't see any point in using the api.js for routes at this time 
+ Don't see any point in using the api.js for routes at this time 
 
 app.get("/api/search", require ("./routes/api"));
 
