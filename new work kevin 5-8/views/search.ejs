@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><% include partials/head.ejs %></head>
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div>
+                <div style="float:right"; width="200px">
+                    <form action="/list/1" method="post">
+                        <input type="text" name="searchText" />
+                        <button type="submit">Search</button>
+                    </form>
+                </div>
+                <h1><%= title %></h1>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-12">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Food</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% for(var i=0; i<food.length; i++) {%>
+                        <tr>
+                            <td>
+                                <a href="/details/<%= food[i].NDB_No  %>"><%= food[i].Shrt_Desc %></a>
+                            </td>
+                        </tr>
+                        <% } %>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <% if (pageCount > 1) { %>  
+            <ul class="pagination">  
+                <% if (currentPage > 1) { %>
+                    <li><a href="/list/1">&laquo;</a></li>
+                <% } %>
+                <% var i = 1;
+                if (currentPage > 5) {
+                i = +currentPage - 4;
+                } %>
+                <% if (i !== 1) { %>
+                    <li class="disabled"><a href="#">...</a></li>
+                <% } %>
+                <% for (i; i<=pageCount; i++) { %>
+                    <% if (currentPage == i) { %>
+                        <li class="active"><span><%= i %> <span class="sr-only">(current)</span></span></li>
+                    <% } else { %>
+                         <li><a href="/list/<%= i %>"><%= i %></a></li>
+                    <% } %>
+                    <% if (i == (+currentPage + 4)) { %>
+                         <li class="disabled"><a href="#">...</a></li>
+                    <% break; } %>
+                <% } %>
+                <% if (currentPage != pageCount) { %>
+                    <li><a href="/list/<%= pageCount %>">&raquo;</a></li>
+                <% } %>
+            </ul>  
+        <% } %>  
+    </div><!-- container -->
+    <% include partials/jsdefaults.ejs %>
+</body>
+</html>

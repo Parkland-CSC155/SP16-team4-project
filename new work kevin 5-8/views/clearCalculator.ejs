@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><% include partials/head.ejs %></head>
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div>
+                <div style="float:right"; width="200px">
+                    <form action="/cSearch" method="post">
+                        <input type="text" name="searchText" />
+                        <button type="submit">Add Food</button>
+                    </form>
+                </div>
+                <h1><%= title %></h1>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-12">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Food</th>
+                            <th>Serving Size</th>
+                            <th>Calories</th>
+                            <th>Carbs</th>
+                            <th>Sat. Fat</th>
+                            <th>Cholesterol</th>
+                            <th>Sodium</th>
+                            <th>Sugar</th>
+                            <th>Protein</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% for(var i=0; i<food.length; i++) {%>
+                        <tr>
+                            <td><%= food[i].Shrt_Desc %></td>
+                            <td><%= food[i].GmWt_Desc1 %></td>
+                            <td><%= food[i].Energ_Kcal %></td>
+                            <td><%= food[i].Carbs %></td>
+                            <td><%= food[i].Fat %></td>
+                            <td><%= food[i].Cholesterol %></td>
+                            <td><%= food[i].Sodium %></td>
+                            <td><%= food[i].Sugar %></td>
+                            <td><%= food[i].Protein %></td>
+                        </tr>
+                        <% } %>
+                        <tr>
+                            <td><strong>TOTALS:</strong></td>
+                            <td></td>
+                            <td><strong><%= calTotal %></strong></td>
+                            <td><strong><%= carbTotal %></strong></td>
+                            <td><strong><%= fatTotal %></strong></td>
+                            <td><strong><%= cholTotal %></strong></td>
+                            <td><strong><%= sodiumTotal %></strong></td>
+                            <td><strong><%= sugarTotal %></strong></td>
+                            <td><strong><%= proteinTotal %></strong></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <form action="/clearCalculator" method="post">
+                        <button type="submit">Clear the Calculator</button>
+                    </form>
+    </div><!-- container -->
+    <% include partials/jsdefaults.ejs %>
+</body>
+</html>
