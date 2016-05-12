@@ -2,6 +2,36 @@ var express = require('express');
 var bodyParser = require('body-parser');
 //var routes = require('./routes/api');
 
+//*
+var passport = require('passport');
+var Strategy = require('passport-local').Strategy;
+var db = require('./db');
+//*
+passport.use(new Strategy(function(username, password, cb) {
+       
+        db.users.findByUsername(username, function(err, user) {
+            if (err) { return cb(err); }
+            if (!user) { return cb(null, false); }
+            if (user.password != password) { return cb(null, false); }
+            return cb(null, user);
+        });
+       
+}));
+//*
+passport.serializeUser(function(user, cb) {
+  cb(null, user.id);
+});
+//*
+passport.deserializeUser(function(id, cb) {
+  db.users.findById(id, function (err, user) {
+    if (err) { return cb(err); }
+    cb(null, user);
+  });
+});
+//*
+
+
+
 var app = express();
 // view engine setup
 app.engine('html', require('ejs').renderFile);
@@ -22,23 +52,96 @@ var config = {
 
 var connectionString = process.env.MS_TableConnectionString;
 
+
+//*
+app.use(require('morgan')('combined'));
+app.use(require('cookie-parser')());
+app.use(require('body-parser').urlencoded({ extended: true }));
+app.use(require('express-session')({ 
+    secret: 'keyboard cat', 
+    resave: false, 
+    saveUninitialized: false 
+}));
+app.use(passport.initialize());
+app.use(passport.session());
+
+
 sql.setDefaultConfig( config );
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
+////////////////////////////////////////////////////////////////
+
+app.get('/',
+  function(req, res) {
+    res.render('home', { title: "Home", user: req.user });
+  });
+
+app.get('/login',
+  function(req, res){
+    res.render('login', { title: "Login"});
+  });
+  
+app.post('/login', 
+  passport.authenticate('local', { title: "Login", failureRedirect: '/login' }),
+  function(req, res) {
+    res.redirect('/');
+  });
+  
+app.get('/logout',
+  function(req, res){
+    req.logout();
+    res.redirect('/');
+  });
+
+app.get('/profile',
+  require('connect-ensure-login').ensureLoggedIn(),
+  function(req, res){
+    res.render('profile', { title: "Profile", user: req.user });
+  });
+
+app.get("/session-example", function(req, res, next){
+
+  // ensure that the data on the session
+  // has been set for the first request
+  if(!req.session.viewCount){
+    req.session.viewCount = 0;
+  }
+
+  req.session.viewCount += 1;
+
+  // store arbitrary data that you need between
+  // requests, but is not important enough
+  // to put into a database
+  req.session.chosenIngredients = [
+    { id: 1, qty: 3}
+  ];
+
+  res.send("View Count: " + req.session.viewCount);
+});
+
+/*
+app.listen(process.env.port || 3000, function(){
+    console.log("listening on port 3000");
+});
+*/
+
 ///////////////////////// start routes /////////////////////////
+/*
 app.get("/", function(req, res){
    res.render("login", { title: "Nutrition App Login" }); 
 });
+*/
 
-app.get("/list", function(req, res){
+app.get("/list", require('connect-ensure-login').ensureLoggedIn(), function(req, res){
    sql.execute({
        query: "SELECT [NDB_No], [Shrt_Desc] FROM [csc155-4db].[dbo].[NutritionData] ORDER BY [Shrt_Desc] OFFSET 0 ROWS FETCH NEXT 25 ROWS ONLY",
    }).then( function( results ) {
         var pageCount = 352; 
         var currentPage = 1;
         res.render("list", { 
+           user: req.user,
            title: "Food List",
            food: results,
            pageCount: pageCount,
@@ -47,7 +150,7 @@ app.get("/list", function(req, res){
    });
 });
 
-app.get("/list/:page", function(req, res){
+app.get("/list/:page", require('connect-ensure-login').ensureLoggedIn(), function(req, res){
    var page = req.params.page;
    var skip = (page - 1) * 25;
    sql.execute({
@@ -62,6 +165,7 @@ app.get("/list/:page", function(req, res){
         var pageCount = 352; 
         var currentPage = page;
         res.render("list", { 
+           user: req.user,
            title: "Food List",
            food: results,
            pageCount: pageCount,
@@ -70,7 +174,7 @@ app.get("/list/:page", function(req, res){
    });
 });
 
-app.post("/search", function(req, res){
+app.post("/search", require('connect-ensure-login').ensureLoggedIn(), function(req, res){
    sql.execute({
        query: "SELECT [NDB_No], [Shrt_Desc] FROM [csc155-4db].[dbo].[NutritionData] WHERE [Shrt_Desc] LIKE '%" + req.body.searchText + "%' ORDER BY [Shrt_Desc]"
    }).then( function( results ) {        
@@ -82,11 +186,12 @@ app.post("/search", function(req, res){
    });
 });
 
-app.post("/cSearch", function(req, res){
+app.post("/cSearch", require('connect-ensure-login').ensureLoggedIn(), function(req, res){
    sql.execute({
        query: "SELECT [NDB_No], [Shrt_Desc] FROM [csc155-4db].[dbo].[NutritionData] WHERE [Shrt_Desc] LIKE '%" + req.body.searchText + "%' ORDER BY [Shrt_Desc]"
    }).then( function( results ) {        
         res.render("cSearch", { 
+            user: req.user,
             title: "Calculator Search Results",
             food: results,
             pageCount: 1 
@@ -95,7 +200,7 @@ app.post("/cSearch", function(req, res){
 });
 
 
-app.get("/details/:id", function(req, res){
+app.get("/details/:id", require('connect-ensure-login').ensureLoggedIn(), function(req, res){
    var id = req.params.id;
    sql.execute({
        query: "SELECT [NDB_No], [Shrt_Desc], [Energ_Kcal], [Carbohydrt_(g)] AS Carbs, [FA_Sat_(g)] AS Fat, [Cholestrl_(mg)] AS Cholesterol, [Sodium_(mg)] AS Sodium, [Sugar_Tot_(g)] AS Sugar, [Protein_(g)] AS Protein, [GmWt_Desc1] FROM [csc155-4db].[dbo].[NutritionData] WHERE [NDB_No] = @id",
@@ -107,6 +212,7 @@ app.get("/details/:id", function(req, res){
        }
    }).then( function( results ) {
         res.render("details", { 
+           user: req.user,
            title: "Food Detail",
            food: results 
         });        
@@ -114,7 +220,7 @@ app.get("/details/:id", function(req, res){
 });
 
 //app.get("/calculator/:username", function(req, res){
-app.get("/calculator", function(req, res){
+app.get("/calculator", require('connect-ensure-login').ensureLoggedIn(), function(req, res){
    //var username = req.params.username;
    var username = 'user';
    sql.execute({
@@ -143,6 +249,7 @@ app.get("/calculator", function(req, res){
             proteinTotal += results[i].Protein;
         };
         res.render("calculator", { 
+           user: req.user,
            title: "Nutrition Calculator",
            food: results,
            calTotal: calTotal,
@@ -156,7 +263,7 @@ app.get("/calculator", function(req, res){
    });
 });
 
-app.get("/calculator/:food", function(req, res){
+app.get("/calculator/:food", require('connect-ensure-login').ensureLoggedIn(), function(req, res){
    var food = req.params.food;
    var username = 'user';            
    sql.execute({
@@ -189,6 +296,7 @@ app.get("/calculator/:food", function(req, res){
             proteinTotal += results[i].Protein;
         };
         res.render("calculator", { 
+           user: req.user,
            title: "Nutrition Calculator",
            food: results,
            calTotal: calTotal,
@@ -202,7 +310,7 @@ app.get("/calculator/:food", function(req, res){
    });
 });
 
-app.post("/clearCalculator", function(req, res){
+app.post("/clearCalculator", require('connect-ensure-login').ensureLoggedIn(), function(req, res){
    var username = 'user';            
    sql.execute({
        query: "DELETE FROM [Calculator]; SELECT [Shrt_Desc], [Energ_Kcal], [Carbs], [Fat], [Cholesterol], [Sodium], [Sugar], [Protein], [GmWt_Desc1] FROM [csc155-4db].[dbo].[Calculator] WHERE [username] = @username;",
@@ -230,6 +338,7 @@ app.post("/clearCalculator", function(req, res){
             proteinTotal += results[i].Protein;
         };
         res.render("calculator", { 
+           user: req.user,
            title: "Nutrition Calculator",
            food: results,
            calTotal: calTotal,
@@ -244,7 +353,7 @@ app.post("/clearCalculator", function(req, res){
 });
 
 
-app.get("/api/list/:page", function(req, res){
+app.get("/api/list/:page", require('connect-ensure-login').ensureLoggedIn(), function(req, res){
    var page = req.params.page;
    var skip = (page - 1) * 25;
    sql.execute({
@@ -260,7 +369,7 @@ app.get("/api/list/:page", function(req, res){
    });
 });
 
-app.get("/api/search/:searchText", function(req, res){
+app.get("/api/search/:searchText", require('connect-ensure-login').ensureLoggedIn(), function(req, res){
    var searchText = req.params.searchText;
    sql.execute({
        query: "SELECT [NDB_No], [Shrt_Desc] FROM [csc155-4db].[dbo].[NutritionData] WHERE [Shrt_Desc] LIKE '%" + searchText + "%' ORDER BY [Shrt_Desc]",
@@ -275,7 +384,7 @@ app.get("/api/search/:searchText", function(req, res){
    });
 });
 
-app.get("/api/details/:id", function(req, res){
+app.get("/api/details/:id", require('connect-ensure-login').ensureLoggedIn(), function(req, res){
    var id = req.params.id;
    sql.execute({
        query: "SELECT [NDB_No], [Shrt_Desc], [Energ_Kcal], [Carbohydrt_(g)] AS Carbs, [FA_Sat_(g)] AS Fat, [Cholestrl_(mg)] AS Cholesterol, [Sodium_(mg)] AS Sodium, [Sugar_Tot_(g)] AS Sugar, [Protein_(g)] AS Protein, [GmWt_Desc1] FROM [csc155-4db].[dbo].[NutritionData] WHERE [NDB_No] = @id",

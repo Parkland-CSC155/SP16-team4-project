@@ -4,18 +4,18 @@
 <body>
     <div class="container">
         <h1><%= title %></h1>
-        <form action="/list" method="post">
-            <label>Enter your User Name</label>
-            <br />
-            <input type="text" name="username" />
-            <br />
-            <br />
-            <label>Enter your Password</label>
-            <br />
-            <input type="text" name="password" />
-            <br />
-            <br />
-            <button type="submit">Submit</button>
+        <form action="/login" method="post">
+            <div>
+                <label>Username:</label>
+                <input type="text" name="username"/><br/>
+            </div>
+            <div>
+                <label>Password:</label>
+                <input type="password" name="password"/>
+            </div>
+            <div>
+                <input type="submit" value="Submit"/>
+            </div>
         </form>
     </div><!-- container -->
     <% include partials/jsdefaults.ejs %>

@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><% include partials/head.ejs %></head>
+<body>
+    <div class="container">
+        <h1><%= title %></h1>
+        
+        <% if (!user) { %>
+            <p>Welcome to the Team 4 Final Project!</p>
+            <p>Please <a href="/login">log in</a>.</p>
+        <% } else { %>
+            <p>Hello, <%= user.displayname %>.</p> 
+            <p>View your <a href="/profile">Profile</a>.</p>
+            <p>View the <a href="/list">Food List</a>.</p>
+            <p>View the <a href="/calculator">Calculator</a></p>
+            <p></p>
+            <p><a href="/logout">Log out</a></p>
+        <% } %>
+    </div><!-- container -->
+
+    <% include partials/jsdefaults.ejs %>
+</body>
+</html>
+
